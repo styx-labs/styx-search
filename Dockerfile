@@ -5,7 +5,7 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 ENV ENVIRONMENT=production
-ENV EVAL_ENDPOINT=https://styx-evaluate-16250094868.us-central1.run.app
+ENV EVAL_ENDPOINT=https://styx-evaluate-16250094868.us-central1.run.app/evaluate
 
 ENV PORT=8080
 EXPOSE ${PORT}
