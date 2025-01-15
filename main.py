@@ -4,8 +4,8 @@ from agent.graph import graph
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
 
+load_dotenv()
 
 app = FastAPI(
   title="Candidate search",

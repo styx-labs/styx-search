@@ -100,7 +100,7 @@ def initiate_source_validation(state: SearchState):
 
 
 async def get_evaluation(state: SearchState):
-    remote_eval = RemoteRunnable(os.environ["EVAL_ENDPOINT"])
+    remote_eval = RemoteRunnable(os.getenv("EVAL_ENDPOINT"))
     evaluation = await remote_eval.ainvoke(input=state)
     return {**evaluation}
 
