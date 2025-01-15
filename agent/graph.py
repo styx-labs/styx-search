@@ -15,6 +15,7 @@ from agent.types import (
 )
 from agent.tavily import tavily_search_async
 from langserve import RemoteRunnable
+import os
 
 
 def generate_queries(state: SearchState):
@@ -99,7 +100,7 @@ def initiate_source_validation(state: SearchState):
 
 
 async def get_evaluation(state: SearchState):
-    remote_eval = RemoteRunnable("http://localhost:9051/evaluate")
+    remote_eval = RemoteRunnable(os.environ["EVAL_ENDPOINT"])
     evaluation = await remote_eval.ainvoke(input=state)
     return {**evaluation}
 
