@@ -2,17 +2,11 @@ from langgraph.constants import Send
 from langgraph.graph import START, END, StateGraph
 from agent.helper_functions import (
     deduplicate_and_format_sources,
-    heuristic_validator,
-    llm_validator,
+    validate_source,
     distill_source,
     get_search_queries,
 )
-from agent.types import (
-    SearchState,
-    SearchInputState,
-    SearchQuery,
-    OutputState
-)
+from agent.types import SearchState, SearchInputState, SearchQuery, OutputState
 from agent.tavily import tavily_search_async
 from langserve import RemoteRunnable
 import os
@@ -45,23 +39,26 @@ def validate_and_distill_source(state: SearchState):
     candidate_context = state["candidate_context"]
     confidence_threshold = state["confidence_threshold"]
 
-    if not heuristic_validator(
-        source["raw_content"] if source["raw_content"] else "",
-        source["title"],
-        candidate_full_name,
-    ):
-        return {"validated_sources": []}
-
-    llm_output = llm_validator(
-        source["raw_content"], candidate_full_name, candidate_context
+    confidence = validate_source(
+        raw_content=source["raw_content"] if source["raw_content"] else "",
+        title=source["title"],
+        candidate_full_name=candidate_full_name,
+        candidate_context=candidate_context,
+        role_query=source["query"],
+        is_job_description=source["is_job_description"],
     )
-    if llm_output.confidence < confidence_threshold:
+
+    if confidence < confidence_threshold:
         return {"validated_sources": []}
 
-    source["weight"] = llm_output.confidence
+    source["weight"] = confidence
     source["distilled_content"] = distill_source(
-        source["raw_content"], candidate_full_name
-    ).distilled_source
+        raw_content=source["raw_content"],
+        is_job_description=source["is_job_description"],
+        candidate_full_name=candidate_full_name,
+        role_query=source["query"],
+    )
+
     return {"validated_sources": [source]}
 
 
@@ -105,9 +102,7 @@ async def get_evaluation(state: SearchState):
     return {**evaluation}
 
 
-builder = StateGraph(
-    SearchState, input=SearchInputState, output=OutputState
-)
+builder = StateGraph(SearchState, input=SearchInputState, output=OutputState)
 builder.add_node("generate_queries", generate_queries)
 builder.add_node("gather_sources", gather_sources)
 builder.add_node("validate_and_distill_source", validate_and_distill_source)

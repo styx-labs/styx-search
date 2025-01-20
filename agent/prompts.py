@@ -56,7 +56,7 @@ validation_prompt = """
     - Are there enough specific details to be confident this is about our candidate?
     - Could this content reasonably apply to someone else with the same name?
 
-    While you should be very careful in your evaluation, we don't want to reject a valid source. Provide a confidence score between `0` and `1`, with anything above `0.5` being a valid source.
+    While you should be very careful in your evaluation, we don't want to reject a valid source. Provide a confidence score between `0` and `1`, with anything above `0.8` being a valid source.
 """
 
 

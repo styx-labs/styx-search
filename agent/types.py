@@ -15,7 +15,7 @@ class TraitType(str, Enum):
         if isinstance(value, str):
             return cls(value.upper())
         return None
-    
+
 
 class KeyTrait(BaseModel):
     trait: str
@@ -24,8 +24,12 @@ class KeyTrait(BaseModel):
     value_type: Optional[str] = None
     required: bool = True
 
+
 class SearchQuery(BaseModel):
     search_query: str = Field(None, description="Query for web search.")
+    is_job_description_query: bool = Field(
+        False, description="Whether this query is for job descriptions."
+    )
 
 
 class QueriesOutput(BaseModel):
@@ -38,8 +42,18 @@ class ValidationOutput(BaseModel):
     confidence: float
 
 
+class JobDescriptionValidationOutput(BaseModel):
+    confidence: float
+
+
 class DistillSourceOutput(BaseModel):
     distilled_source: str
+
+
+class JobDescriptionDistillOutput(BaseModel):
+    skills: list[str]
+    requirements: list[str]
+    role_summary: str
 
 
 class SearchState(TypedDict):
