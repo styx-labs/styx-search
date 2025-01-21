@@ -3,6 +3,7 @@ from typing_extensions import TypedDict
 import operator
 from pydantic import BaseModel, Field
 from enum import Enum
+from datetime import date
 
 
 class TraitType(str, Enum):
@@ -56,10 +57,71 @@ class JobDescriptionDistillOutput(BaseModel):
     role_summary: str
 
 
+class AILinkedinJobDescription(BaseModel):
+    job_description: str
+    sources: List[str]
+
+
+class LinkedInExperience(BaseModel):
+    title: str
+    company: str
+    description: Optional[str] = None
+    starts_at: Optional[date] = None
+    ends_at: Optional[date] = None
+    location: Optional[str] = None
+    summarized_job_description: Optional[AILinkedinJobDescription] = None
+
+
+class LinkedInEducation(BaseModel):
+    school: str
+    degree_name: Optional[str] = None
+    field_of_study: Optional[str] = None
+    starts_at: Optional[date] = None
+    ends_at: Optional[date] = None
+
+
+class LinkedInProfile(BaseModel):
+    full_name: str
+    occupation: Optional[str] = None
+    headline: Optional[str] = None
+    summary: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
+    public_identifier: str
+    experiences: List[LinkedInExperience] = []
+    education: List[LinkedInEducation] = []
+
+    def to_context_string(self) -> str:
+        """Convert the profile to a formatted string context."""
+        context = ""
+        if self.occupation:
+            context += f"Current Occupation: {self.occupation}\n"
+        if self.headline:
+            context += f"Headline: {self.headline}\n"
+        if self.summary:
+            context += f"Summary: {self.summary}\n"
+        if self.city:
+            context += f"City: {self.city}\n"
+
+        for exp in self.experiences:
+            context += f"Experience: {exp.title} at {exp.company}"
+            if exp.description:
+                context += f" - {exp.description}"
+            context += "\n"
+
+        for edu in self.education:
+            context += (
+                f"Education: {edu.school}; {edu.degree_name} in {edu.field_of_study}\n"
+            )
+
+        return context
+
+
 class SearchState(TypedDict):
     source_str: str
     job_description: str
     candidate_context: str
+    candidate_profile: LinkedInProfile
     candidate_full_name: str
     key_traits: List[KeyTrait]
     number_of_queries: int
@@ -74,6 +136,7 @@ class SearchState(TypedDict):
 class SearchInputState(TypedDict):
     job_description: str
     candidate_context: str
+    candidate_profile: LinkedInProfile
     candidate_full_name: str
     key_traits: list[KeyTrait]
     number_of_queries: int
@@ -86,3 +149,4 @@ class OutputState(TypedDict):
     summary: str
     overall_score: float
     source_str: str
+    candidate_profile: LinkedInProfile

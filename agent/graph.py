@@ -5,8 +5,16 @@ from agent.helper_functions import (
     validate_source,
     distill_source,
     get_search_queries,
+    distill_job_description,
 )
-from agent.types import SearchState, SearchInputState, SearchQuery, OutputState
+from agent.types import (
+    SearchState,
+    SearchInputState,
+    SearchQuery,
+    OutputState,
+    AILinkedinJobDescription,
+    LinkedInProfile,
+)
 from agent.tavily import tavily_search_async
 from langserve import RemoteRunnable
 import os
@@ -66,10 +74,21 @@ def compile_sources(state: SearchState):
     validated_sources = state["validated_sources"]
     ranked_sources = sorted(validated_sources, key=lambda x: x["weight"], reverse=True)
 
+    # Separate job description sources from other sources
+    job_description_sources = []
+    other_sources = []
+
+    for source in ranked_sources:
+        if source["is_job_description"]:
+            job_description_sources.append(source)
+        else:
+            other_sources.append(source)
+
+    # Format non-job-description sources for citations
     formatted_text = "Sources:\n\n"
     citation_list = []
 
-    for i, source in enumerate(ranked_sources, 1):
+    for i, source in enumerate(other_sources, 1):
         formatted_text += (
             f"[{i}]: {source['title']}:\n"
             f"URL: {source['url']}\n"
@@ -86,7 +105,47 @@ def compile_sources(state: SearchState):
             }
         )
 
-    return {"source_str": formatted_text.strip(), "citations": citation_list}
+    # Convert candidate_profile dict to LinkedInProfile object
+    candidate_profile = LinkedInProfile(**state["candidate_profile"])
+
+    # Update LinkedIn Experience entries with job description sources
+    for experience in candidate_profile.experiences:
+        matching_sources = [
+            source
+            for source in job_description_sources
+            if source["query"]
+            .lower()
+            .strip()
+            .startswith(f"{experience.company.lower()} {experience.title.lower()}")
+        ]
+        if matching_sources:
+            # Get top 3 sources by confidence
+            top_sources = sorted(matching_sources, key=lambda x: x["weight"], reverse=True)[:3]
+            
+            # Combine raw content from all sources
+            combined_raw_content = "\n\n".join(
+                source["raw_content"] for source in top_sources
+            )
+            
+            # Generate a coherent summary using all sources
+            job_description = distill_job_description(
+                combined_raw_content,
+                f"{experience.company} {experience.title}"
+            )
+            
+            experience.summarized_job_description = AILinkedinJobDescription(
+                job_description=f"Role Summary: {job_description.role_summary}\nSkills: {', '.join(job_description.skills)}\nRequirements: {', '.join(job_description.requirements)}",
+                sources=[source["url"] for source in top_sources],
+            )
+
+    # Convert back to dict for state
+    candidate_profile_dict = candidate_profile.model_dump()
+
+    return {
+        "source_str": formatted_text.strip(),
+        "citations": citation_list,
+        "candidate_profile": candidate_profile_dict,
+    }
 
 
 def initiate_source_validation(state: SearchState):
