@@ -58,7 +58,9 @@ class JobDescriptionDistillOutput(BaseModel):
 
 
 class AILinkedinJobDescription(BaseModel):
-    job_description: str
+    role_summary: str
+    skills: List[str]
+    requirements: List[str]
     sources: List[str]
 
 
@@ -116,6 +118,20 @@ class LinkedInProfile(BaseModel):
 
         return context
 
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(
+            full_name=data["full_name"],
+            occupation=data["occupation"],
+            headline=data["headline"],
+            summary=data["summary"],
+            city=data["city"],
+            country=data["country"],
+            public_identifier=data["public_identifier"],
+            experiences=data["experiences"],
+            education=data["education"],
+        )
+
 
 class SearchState(TypedDict):
     source_str: str
@@ -150,3 +166,13 @@ class OutputState(TypedDict):
     overall_score: float
     source_str: str
     candidate_profile: LinkedInProfile
+
+
+class Role(BaseModel):
+    company: str
+    role: str
+    team: Optional[str] = None
+
+
+class RolesOutput(BaseModel):
+    roles: list[Role]
