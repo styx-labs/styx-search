@@ -56,7 +56,7 @@ validation_prompt = """
     - Are there enough specific details to be confident this is about our candidate?
     - Could this content reasonably apply to someone else with the same name?
 
-    While you should be very careful in your evaluation, we don't want to reject a valid source. Provide a confidence score between `0` and `1`, with anything above `0.5` being a valid source.
+    While you should be very careful in your evaluation, we don't want to reject a valid source. Provide a confidence score between `0` and `1`, with anything above `0.8` being a valid source.
 """
 
 
@@ -73,4 +73,68 @@ distill_source_prompt = """
 
     Here is the person's full name:
     {candidate_full_name}
+"""
+
+validate_job_description_prompt = """
+    Given a job description and role query (company and role), verify:
+    1. Is this a job description page?
+    2. Does it match the role and company from the query?
+    3. Is it a job description page rather than a news article, profile, or other content?
+
+    0.0-0.3: Not about the company or role
+    0.4-0.6: Partial match (company or role, but not both)
+    0.7-0.8: Matches both but general description
+    0.9-1.0: Perfect match with team details
+
+    Job description content:
+    {raw_content}
+
+    Role query: {role_query}
+    
+    Return a confidence score between 0 and 1.
+"""
+
+validate_human_source_prompt = """
+    Given content and candidate information, verify:
+    1. Is this content specifically about the candidate?
+    2. Does it match their professional background?
+    3. Is it a profile/article about them rather than just a mention?
+
+    0.0-0.3: Not about the candidate
+    0.4-0.6: Partial match (candidate, but not both)
+    0.7-0.8: Matches both but general description
+    0.9-1.0: Perfect match with candidate details
+
+    Candidate Full Name: {candidate_full_name}
+    Candidate Profile:
+    {candidate_context}
+    Raw Content: {raw_content}
+    
+    Return a confidence score between 0 and 1.
+"""
+
+identify_roles_prompt = """
+    Extract all professional roles from the given context.
+    For each role, identify:
+    - company
+    - role/title
+    - team/department (if available, usually a short name in the description identifies it)
+    
+    Return as a list of roles, where each role has:
+    - company: string
+    - role: string
+    - team: string or null if not available"
+"""
+
+distill_job_description_prompt = """
+    Given a job description and a role query (which includes company and role), extract:
+    1. A list of required or desired skills specific to this role at this company
+    2. A list of other requirements (education, experience, etc.) for this position
+    3. A brief summary of the role (1-2 sentences) that captures what makes this role unique at this company
+
+    Focus on information that would help determine if someone has relevant experience in this specific role at this specific company.
+    Job description:
+    {raw_content}
+
+    Role query: {role_query}
 """
