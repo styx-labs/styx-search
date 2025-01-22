@@ -50,10 +50,8 @@ def distill_source(
 ) -> str:
     """Route to appropriate distiller based on source type and return formatted content."""
     if is_job_description:
-        if not role_query:
-            return ""
-        result = distill_job_description(raw_content, role_query)
-        return f"Role Summary: {result.role_summary}\nSkills: {', '.join(result.skills)}\nRequirements: {', '.join(result.requirements)}"
+        # For job descriptions, just return raw content to be processed later
+        return raw_content
     else:
         if not candidate_full_name:
             return ""
