@@ -8,4 +8,3 @@ langchain-openai==0.2.14
 python-dotenv==1.0.0
 tavily-python
 google-cloud-secret-manager
-google-crc32c
