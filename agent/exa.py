@@ -1,13 +1,10 @@
-import dotenv
-import os
 import asyncio
 from langsmith import traceable
 import requests
+from agent.get_secret import get_secret
 
 
-dotenv.load_dotenv()
 url = "https://api.exa.ai/search"
-
 
 @traceable(name="exa_search_async")
 async def exa_search_async(queries):
@@ -31,7 +28,7 @@ async def _single_exa_search(query):
         }
     }
     headers = {
-        "x-api-key": os.getenv('EXA_API_KEY'),
+        "x-api-key": get_secret("exa-api-key", "1"),
         "Content-Type": "application/json"
     }
 
