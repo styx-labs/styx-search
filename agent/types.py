@@ -198,6 +198,7 @@ class SearchState(TypedDict):
     ]  # This is for parallelizing source validation
     citations: list[dict]
     confidence_threshold: float
+    ideal_profiles: list[str]
 
 
 class SearchInputState(TypedDict):
@@ -208,6 +209,7 @@ class SearchInputState(TypedDict):
     key_traits: list[KeyTrait]
     number_of_queries: int
     confidence_threshold: float
+    ideal_profiles: list[str]
 
 
 class OutputState(TypedDict):
@@ -217,7 +219,8 @@ class OutputState(TypedDict):
     overall_score: float
     source_str: str
     candidate_profile: LinkedInProfile
-
+    ideal_profiles: list[str]
+    
 
 class Role(BaseModel):
     company: str
