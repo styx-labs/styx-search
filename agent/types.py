@@ -2,26 +2,12 @@ from typing import List, Annotated, Optional
 from typing_extensions import TypedDict
 import operator
 from pydantic import BaseModel, Field
-from enum import Enum
 from datetime import date
-
-
-class TraitType(str, Enum):
-    BOOLEAN = "BOOLEAN"
-    SCORE = "SCORE"
-
-    @classmethod
-    def _missing_(cls, value: str):
-        # Handle uppercase values by converting to lowercase
-        if isinstance(value, str):
-            return cls(value.upper())
-        return None
 
 
 class KeyTrait(BaseModel):
     trait: str
     description: str
-    trait_type: TraitType
     value_type: Optional[str] = None
     required: bool = True
 
@@ -216,10 +202,11 @@ class OutputState(TypedDict):
     citations: list[dict]
     sections: list[dict]
     summary: str
-    overall_score: float
+    required_met: int
+    optional_met: int
     source_str: str
     candidate_profile: LinkedInProfile
-    ideal_profiles: list[str]
+    fit: int
     
 
 class Role(BaseModel):

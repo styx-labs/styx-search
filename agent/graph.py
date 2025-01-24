@@ -27,6 +27,7 @@ def generate_queries(state: SearchState):
         state["candidate_context"],
         state["job_description"],
         state["number_of_queries"],
+        state["candidate_profile"],
     )
 
     return {"search_queries": content.queries}
