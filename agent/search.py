@@ -2,7 +2,7 @@ from typing import List
 from langchain_core.messages import HumanMessage, SystemMessage
 from langsmith import traceable
 from services.azure_openai import llm
-from agent.types import QueriesOutput, SearchQuery
+from agent.types import QueriesOutput, SearchQuery, LinkedInProfile
 from agent.llm_functions import identify_roles
 from agent.prompts import search_query_prompt
 
@@ -52,17 +52,27 @@ def get_search_queries(
     candidate_context: str,
     job_description: str,
     number_of_queries: int,
+    candidate_profile: LinkedInProfile,
 ) -> List[SearchQuery]:
     # First identify roles
-    roles_output = identify_roles(candidate_context)
+    # roles_output = identify_roles(candidate_context)
     # Generate role-specific queries
-    role_queries = [
-        SearchQuery(
-            search_query=f"{role.company} {role.role}{' ' + role.team if role.team else ''} job description",
-            is_job_description_query=True,
+    # role_queries = [
+    #     SearchQuery(
+    #         search_query=f"{role.company} {role.role}{' ' + role.team if role.team else ''} job description",
+    #         is_job_description_query=True,
+    #     )
+    #     for role in roles_output.roles
+    # ]
+
+    role_queries = []
+    for experience in candidate_profile['experiences'][:3]:
+        role_queries.append(
+            SearchQuery(
+                search_query=f"{experience.company} {experience.title} job description",
+                is_job_description_query=True,
+            )
         )
-        for role in roles_output.roles
-    ]
 
     # Get general queries from LLM
     structured_llm = llm.with_structured_output(QueriesOutput)
