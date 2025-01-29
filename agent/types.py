@@ -185,6 +185,7 @@ class SearchState(TypedDict):
     citations: list[dict]
     confidence_threshold: float
     ideal_profiles: list[str]
+    custom_instructions: Optional[str] = None
 
 
 class SearchInputState(TypedDict):
@@ -196,6 +197,7 @@ class SearchInputState(TypedDict):
     number_of_queries: int
     confidence_threshold: float
     ideal_profiles: list[str]
+    custom_instructions: Optional[str] = None
 
 
 class OutputState(TypedDict):
@@ -207,7 +209,8 @@ class OutputState(TypedDict):
     source_str: str
     candidate_profile: LinkedInProfile
     fit: int
-    
+    custom_instructions: Optional[str] = None
+
 
 class Role(BaseModel):
     company: str
