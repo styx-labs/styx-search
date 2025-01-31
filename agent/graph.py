@@ -10,7 +10,7 @@ from agent.source_compiler import (
     update_profile_with_job_descriptions,
 )
 from agent.search import get_search_queries, deduplicate_and_format_sources
-from agent.types.types import (
+from agent.types.search import (
     SearchState,
     SearchInputState,
     OutputState,

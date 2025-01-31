@@ -2,9 +2,9 @@ from typing import List
 from langchain_core.messages import HumanMessage, SystemMessage
 from langsmith import traceable
 from services.azure_openai import llm
-from agent.types.types import QueriesOutput, SearchQuery
+from agent.types.search import SearchQuery
+from agent.types.base import QueriesOutput
 from agent.types.linkedin import LinkedInProfile
-from agent.llm_functions import identify_roles
 from agent.prompts import search_query_prompt
 
 

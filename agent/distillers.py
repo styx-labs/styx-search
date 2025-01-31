@@ -1,7 +1,7 @@
 from langchain_core.messages import HumanMessage, SystemMessage
 from langsmith import traceable
 from services.azure_openai import llm
-from agent.types.types import JobDescriptionDistillOutput, DistillSourceOutput
+from agent.types.base import JobDescriptionDistillOutput, DistillSourceOutput
 from agent.prompts import distill_job_description_prompt, distill_source_prompt
 
 
