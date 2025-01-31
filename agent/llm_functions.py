@@ -1,7 +1,7 @@
 from langchain_core.messages import HumanMessage, SystemMessage
 from langsmith import traceable
 from services.azure_openai import llm
-from agent.types.base import RolesOutput
+from models.base import RolesOutput
 from agent.prompts import identify_roles_prompt
 
 

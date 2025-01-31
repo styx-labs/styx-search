@@ -1,7 +1,7 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from langsmith import traceable
 from services.azure_openai import llm
-from agent.types.base import ValidationOutput, JobDescriptionValidationOutput
+from models.base import ValidationOutput, JobDescriptionValidationOutput
 from agent.text_utils import clean_text
 from agent.prompts import validate_job_description_prompt, validate_human_source_prompt
 

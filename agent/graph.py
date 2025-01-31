@@ -10,12 +10,12 @@ from agent.source_compiler import (
     update_profile_with_job_descriptions,
 )
 from agent.search import get_search_queries, deduplicate_and_format_sources
-from agent.types.search import (
+from models.search import (
     SearchState,
     SearchInputState,
     OutputState,
 )
-from agent.types.linkedin import LinkedInProfile
+from models.linkedin import LinkedInProfile
 from services.tavily import tavily_search_async
 from langserve import RemoteRunnable
 import os
