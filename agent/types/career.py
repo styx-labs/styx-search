@@ -8,13 +8,18 @@ from .base import SerializableModel
 class FundingStage(str, Enum):
     """Enum for company funding stages."""
 
-    SEED = "Seed"
     PRE_SEED = "Pre-Seed"
+    SEED = "Seed"
     SERIES_A = "Series A"
     SERIES_B = "Series B"
     SERIES_C = "Series C"
-    SERIES_D_PLUS = "Series D+"
+    SERIES_D = "Series D"
+    SERIES_E = "Series E"
+    SERIES_F = "Series F"
+    SERIES_G = "Series G"
+    SERIES_H = "Series H"
     IPO = "IPO"
+    ACQUIRED = "Acquired"
     UNKNOWN = "Unknown"
 
 
@@ -228,6 +233,7 @@ class CareerMetrics(SerializableModel):
     current_tenure_months: int
     tech_stacks: Optional[List[str]] = None
     career_tags: Optional[List[str]] = None
+    experience_tags: Optional[List[str]] = None
 
     def to_dict(self) -> dict:
         """Convert career metrics to a dictionary format."""
@@ -237,4 +243,5 @@ class CareerMetrics(SerializableModel):
             "current_tenure_months": self.current_tenure_months,
             "tech_stacks": self.tech_stacks,
             "career_tags": self.career_tags,
+            "experience_tags": self.experience_tags,
         }
