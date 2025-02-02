@@ -254,6 +254,7 @@ class LinkedInEducation(SerializableModel):
     field_of_study: Optional[str] = None
     starts_at: Optional[date] = None
     ends_at: Optional[date] = None
+    school_linkedin_profile_url: Optional[str] = None
 
 
 class LinkedInProfile(SerializableModel):
