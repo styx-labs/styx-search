@@ -2,8 +2,9 @@ from typing import List
 from langchain_core.messages import HumanMessage, SystemMessage
 from langsmith import traceable
 from services.azure_openai import llm
-from agent.types import QueriesOutput, SearchQuery, LinkedInProfile
-from agent.llm_functions import identify_roles
+from models.search import SearchQuery
+from models.base import QueriesOutput
+from models.linkedin import LinkedInProfile
 from agent.prompts import search_query_prompt
 
 
@@ -66,7 +67,7 @@ def get_search_queries(
     # ]
 
     role_queries = []
-    for experience in candidate_profile['experiences'][:3]:
+    for experience in candidate_profile["experiences"][:3]:
         role_queries.append(
             SearchQuery(
                 search_query=f"{experience.company} {experience.title} job description",

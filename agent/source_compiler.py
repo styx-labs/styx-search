@@ -1,5 +1,5 @@
 from typing import List, Dict, Tuple
-from agent.types import LinkedInProfile, AILinkedinJobDescription
+from models.linkedin import LinkedInProfile, AILinkedinJobDescription
 from agent.distillers import distill_job_description
 
 
