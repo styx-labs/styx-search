@@ -46,6 +46,10 @@ def update_experience_with_job_descriptions(
     experience, job_description_sources: List[Dict], max_sources: int = 3
 ) -> None:
     """Update a single experience entry with relevant job descriptions."""
+    # Skip if company or title is None
+    if not experience.company or not experience.title:
+        return
+
     # Find matching sources for this experience
     matching_sources = [
         source
