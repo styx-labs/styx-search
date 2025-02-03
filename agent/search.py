@@ -55,19 +55,10 @@ def get_search_queries(
     number_of_queries: int,
     candidate_profile: LinkedInProfile,
 ) -> List[SearchQuery]:
-    # First identify roles
-    # roles_output = identify_roles(candidate_context)
-    # Generate role-specific queries
-    # role_queries = [
-    #     SearchQuery(
-    #         search_query=f"{role.company} {role.role}{' ' + role.team if role.team else ''} job description",
-    #         is_job_description_query=True,
-    #     )
-    #     for role in roles_output.roles
-    # ]
-
     role_queries = []
     for experience in candidate_profile["experiences"][:3]:
+        if not experience.company or not experience.title:
+            continue
         role_queries.append(
             SearchQuery(
                 search_query=f"{experience.company} {experience.title} job description",
