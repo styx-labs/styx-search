@@ -1,7 +1,7 @@
 from typing import List
 from langchain_core.messages import HumanMessage, SystemMessage
 from langsmith import traceable
-from services.azure_openai import llm
+from services.azure_openai import llm_4o
 from models.search import SearchQuery
 from models.base import QueriesOutput
 from models.linkedin import LinkedInProfile
@@ -67,7 +67,7 @@ def get_search_queries(
         )
 
     # Get general queries from LLM
-    structured_llm = llm.with_structured_output(QueriesOutput)
+    structured_llm = llm_4o.with_structured_output(QueriesOutput)
     output = structured_llm.invoke(
         [
             SystemMessage(

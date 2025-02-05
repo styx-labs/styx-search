@@ -1,6 +1,6 @@
 from langchain_core.messages import HumanMessage, SystemMessage
 from langsmith import traceable
-from services.azure_openai import llm
+from services.azure_openai import llm_4o, llm_4o_mini
 from models.base import JobDescriptionDistillOutput, DistillSourceOutput
 from agent.prompts import distill_job_description_prompt, distill_source_prompt
 
@@ -10,7 +10,7 @@ def distill_job_description(
     raw_content: str, role_query: str
 ) -> JobDescriptionDistillOutput:
     """Extract skills, requirements and summary from a job description."""
-    structured_llm = llm.with_structured_output(JobDescriptionDistillOutput)
+    structured_llm = llm_4o.with_structured_output(JobDescriptionDistillOutput)
     output = structured_llm.invoke(
         [
             SystemMessage(
@@ -27,7 +27,7 @@ def distill_job_description(
 @traceable(name="distill_human")
 def distill_human(raw_content: str, candidate_full_name: str) -> DistillSourceOutput:
     """Extract relevant information about a person from raw content."""
-    structured_llm = llm.with_structured_output(DistillSourceOutput)
+    structured_llm = llm_4o_mini.with_structured_output(DistillSourceOutput)
     output = structured_llm.invoke(
         [
             SystemMessage(

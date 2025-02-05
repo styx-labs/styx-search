@@ -4,12 +4,13 @@ from langchain_openai import AzureChatOpenAI
 from agent.get_secret import get_secret
 
 
-llm = AzureChatOpenAI(
+llm_4o = AzureChatOpenAI(
     deployment_name="gpt-4o",
     openai_api_version="2024-08-01-preview",
     azure_endpoint=get_secret("azure-openai-endpoint", "1"),
     openai_api_key=get_secret("azure-openai-api-key", "1"),
     temperature=0,
+    max_retries=5,
 )
 
 llm_4o_mini = AzureChatOpenAI(
@@ -18,6 +19,7 @@ llm_4o_mini = AzureChatOpenAI(
     azure_endpoint=get_secret("azure-openai-endpoint", "1"),
     openai_api_key=get_secret("azure-openai-api-key", "1"),
     temperature=0,
+    max_retries=5,
 )
 
 
