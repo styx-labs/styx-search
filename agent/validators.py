@@ -1,6 +1,6 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from langsmith import traceable
-from services.azure_openai import llm_4o, llm_4o_mini
+from services.llms import llm_fast
 from models.base import ValidationOutput, JobDescriptionValidationOutput
 from agent.text_utils import clean_text
 from agent.prompts import validate_job_description_prompt, validate_human_source_prompt
@@ -32,7 +32,7 @@ def job_description_llm_validator(
     raw_content: str, role_query: str
 ) -> JobDescriptionValidationOutput:
     """Validate if content contains a relevant job description using LLM."""
-    structured_llm = llm_4o.with_structured_output(JobDescriptionValidationOutput)
+    structured_llm = llm_fast.with_structured_output(JobDescriptionValidationOutput)
     output = structured_llm.invoke(
         [
             SystemMessage(
@@ -51,7 +51,7 @@ def llm_validator(
     raw_content, candidate_full_name: str, candidate_context: str
 ) -> ValidationOutput:
     """Validate if content is about the candidate using LLM."""
-    structured_llm = llm_4o_mini.with_structured_output(ValidationOutput)
+    structured_llm = llm_fast.with_structured_output(ValidationOutput)
     output = structured_llm.invoke(
         [
             SystemMessage(

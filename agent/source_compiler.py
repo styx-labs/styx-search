@@ -91,3 +91,21 @@ def update_profile_with_job_descriptions(
     for experience in profile.experiences:
         update_experience_with_job_descriptions(experience, job_description_sources)
     return profile
+
+
+def trim_text(text: str, max_tokens: int = 10000) -> str:
+    """Trim text to a maximum estimated tokens by removing content from both ends,
+    keeping the middle section.
+    """
+    CHARS_PER_TOKEN = 4
+    max_chars = max_tokens * CHARS_PER_TOKEN
+    
+    if len(text) <= max_chars:
+        return text
+    
+    total_trim = len(text) - max_chars 
+    trim_each_side = total_trim // 2
+    start = trim_each_side
+    end = len(text) - trim_each_side
+    
+    return text[start:end]

@@ -8,6 +8,7 @@ from agent.source_compiler import (
     separate_sources_by_type,
     format_citations,
     update_profile_with_job_descriptions,
+    trim_text,
 )
 from agent.search import get_search_queries, deduplicate_and_format_sources
 from models.search import (
@@ -41,9 +42,13 @@ async def gather_sources(state: SearchState):
 
 def validate_and_distill_source(state: SearchState):
     source = state["unvalidated_sources"][state["source"]]
+    if source["raw_content"] is None:
+        return {"validated_sources": []}
+    
+    source["raw_content"] = trim_text(source["raw_content"])
 
     confidence = validate_source(
-        raw_content=source["raw_content"] if source["raw_content"] else "",
+        raw_content=source["raw_content"],
         title=source["title"],
         candidate_full_name=state["candidate_full_name"],
         candidate_context=state["candidate_context"],
