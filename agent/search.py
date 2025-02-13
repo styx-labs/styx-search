@@ -1,4 +1,3 @@
-from typing import List
 from langchain_core.messages import HumanMessage, SystemMessage
 from langsmith import traceable
 from services.llms import llm
