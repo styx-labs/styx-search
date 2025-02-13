@@ -38,6 +38,13 @@ async def gather_sources(state: SearchState):
     return {"unvalidated_sources": unvalidated_sources}
 
 
+def initiate_source_validation(state: SearchState):
+    return [
+        Send("validate_and_distill_source", state.model_copy(update={"source": source}))
+        for source in state.unvalidated_sources.keys()
+    ]
+
+
 def validate_and_distill_source(state: SearchState):
     source = state.unvalidated_sources[state.source]
     if source["raw_content"] is None:
@@ -88,23 +95,17 @@ def compile_sources(state: SearchState):
     }
 
 
-def initiate_source_validation(state: SearchState):
-    return [
-        Send("validate_and_distill_source", state.model_copy(update={"source": source}))
-        for source in state.unvalidated_sources.keys()
-    ]
-
-
 async def get_evaluation(state: SearchState):
     remote_eval = RemoteRunnable(os.getenv("EVAL_ENDPOINT"))
-    evaluation_input = EvaluationInputState(
-        source_str=state.source_str,
-        candidate_profile=state.profile,
-        job=state.job,
-        citations=state.citations,
-        custom_instructions=state.custom_instructions,
+    evaluation = await remote_eval.ainvoke(
+        input=EvaluationInputState(
+            source_str=state.source_str,
+            candidate_profile=state.profile,
+            job=state.job,
+            citations=state.citations,
+            custom_instructions=state.custom_instructions,
+        )
     )
-    evaluation = await remote_eval.ainvoke(input=evaluation_input)
     return {**evaluation}
 
 

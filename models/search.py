@@ -2,7 +2,7 @@ from typing import Annotated, Optional
 import operator
 from .linkedin import LinkedInProfile
 from .base import SearchQuery
-from .job import Job
+from .jobs import Job
 from .serializable import SerializableModel
 
 

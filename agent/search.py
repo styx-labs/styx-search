@@ -58,7 +58,7 @@ def get_search_queries(
             continue
         role_queries.append(
             SearchQuery(
-                search_query=f"{experience.company} {experience.title} job description",
+                search_query=f"{experience.company} {experience.title} {experience.description} job description",
                 is_job_description_query=True,
             )
         )
