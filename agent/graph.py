@@ -100,7 +100,7 @@ async def get_evaluation(state: SearchState):
     evaluation = await remote_eval.ainvoke(
         input=EvaluationInputState(
             source_str=state.source_str,
-            candidate_profile=state.profile,
+            profile=state.profile,
             job=state.job,
             citations=state.citations,
             custom_instructions=state.custom_instructions,

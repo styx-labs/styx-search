@@ -34,7 +34,7 @@ class SearchInputState(SerializableModel):
 
 class EvaluationInputState(SerializableModel):
     source_str: str
-    candidate_profile: LinkedInProfile
+    profile: LinkedInProfile
     job: Job
     citations: list[dict]
     custom_instructions: Optional[str] = None
