@@ -1,4 +1,3 @@
-from typing import List
 from langchain_core.messages import HumanMessage, SystemMessage
 from langsmith import traceable
 from services.llms import llm
@@ -49,14 +48,12 @@ def deduplicate_and_format_sources(search_response) -> dict:
 
 @traceable(name="get_search_queries")
 def get_search_queries(
-    candidate_full_name: str,
-    candidate_context: str,
     job_description: str,
     number_of_queries: int,
-    candidate_profile: LinkedInProfile,
-) -> List[SearchQuery]:
+    profile: LinkedInProfile,
+) -> list[SearchQuery]:
     role_queries = []
-    for experience in candidate_profile["experiences"][:3]:
+    for experience in profile.experiences[:3]:
         if not experience.company or not experience.title:
             continue
         role_queries.append(
@@ -72,8 +69,8 @@ def get_search_queries(
         [
             SystemMessage(
                 content=search_query_prompt.format(
-                    candidate_full_name=candidate_full_name,
-                    candidate_context=candidate_context,
+                    candidate_full_name=profile.full_name,
+                    candidate_context=profile.to_context_string(),
                     job_description=job_description,
                     number_of_queries=number_of_queries,
                 )
@@ -84,7 +81,7 @@ def get_search_queries(
 
     # Add a query for the candidate's name
     output.queries.append(
-        SearchQuery(search_query=candidate_full_name, is_job_description_query=False)
+        SearchQuery(search_query=profile.full_name, is_job_description_query=False)
     )
 
     # Combine role queries with general queries

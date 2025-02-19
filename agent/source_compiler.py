@@ -1,9 +1,8 @@
-from typing import List, Dict, Tuple
 from models.linkedin import LinkedInProfile, AILinkedinJobDescription
 from agent.distillers import distill_job_description
 
 
-def separate_sources_by_type(sources: List[Dict]) -> Tuple[List[Dict], List[Dict]]:
+def separate_sources_by_type(sources: list[dict]) -> tuple[list[dict], list[dict]]:
     """Separate sources into job descriptions and other sources."""
     job_description_sources = []
     other_sources = []
@@ -17,7 +16,7 @@ def separate_sources_by_type(sources: List[Dict]) -> Tuple[List[Dict], List[Dict
     return job_description_sources, other_sources
 
 
-def format_citations(sources: List[Dict]) -> Tuple[str, List[Dict]]:
+def format_citations(sources: list[dict]) -> tuple[str, list[dict]]:
     """Format non-job-description sources into citations."""
     formatted_text = "Sources:\n\n"
     citation_list = []
@@ -43,7 +42,7 @@ def format_citations(sources: List[Dict]) -> Tuple[str, List[Dict]]:
 
 
 def update_experience_with_job_descriptions(
-    experience, job_description_sources: List[Dict], max_sources: int = 3
+    experience, job_description_sources: list[dict], max_sources: int = 3
 ) -> None:
     """Update a single experience entry with relevant job descriptions."""
     # Skip if company or title is None
@@ -85,7 +84,7 @@ def update_experience_with_job_descriptions(
 
 
 def update_profile_with_job_descriptions(
-    profile: LinkedInProfile, job_description_sources: List[Dict]
+    profile: LinkedInProfile, job_description_sources: list[dict]
 ) -> LinkedInProfile:
     """Update all experiences in a profile with job descriptions."""
     for experience in profile.experiences:
@@ -99,13 +98,13 @@ def trim_text(text: str, max_tokens: int = 10000) -> str:
     """
     CHARS_PER_TOKEN = 4
     max_chars = max_tokens * CHARS_PER_TOKEN
-    
+
     if len(text) <= max_chars:
         return text
-    
-    total_trim = len(text) - max_chars 
+
+    total_trim = len(text) - max_chars
     trim_each_side = total_trim // 2
     start = trim_each_side
     end = len(text) - trim_each_side
-    
+
     return text[start:end]

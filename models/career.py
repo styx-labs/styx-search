@@ -1,7 +1,7 @@
-from typing import List, Set, Optional
+from typing import Optional
 from datetime import date
 from enum import Enum
-from .base import SerializableModel
+from .serializable import SerializableModel
 
 
 # Move all the Enum classes and career analysis related classes here
@@ -193,7 +193,7 @@ class TechStackPatterns:
     }
 
     @classmethod
-    def detect_tech_stacks(cls, text: str) -> Set[TechStack]:
+    def detect_tech_stacks(cls, text: str) -> set[TechStack]:
         """Detect tech stacks from text description."""
         text = text.lower()
         stacks = set()
@@ -231,9 +231,9 @@ class CareerMetrics(SerializableModel):
     total_experience_months: int
     average_tenure_months: int
     current_tenure_months: int
-    tech_stacks: Optional[List[str]] = None
-    career_tags: Optional[List[str]] = None
-    experience_tags: Optional[List[str]] = None
+    tech_stacks: Optional[list[str]] = None
+    career_tags: Optional[list[str]] = None
+    experience_tags: Optional[list[str]] = None
 
     def to_dict(self) -> dict:
         """Convert career metrics to a dictionary format."""

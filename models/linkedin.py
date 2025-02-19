@@ -2,9 +2,9 @@
 LinkedIn data models with standardized serialization.
 """
 
-from typing import List, Optional
+from typing import Optional
 from datetime import date
-from .base import SerializableModel
+from .serializable import SerializableModel
 from .career import (
     CareerMetrics,
     FundingStage,
@@ -56,7 +56,7 @@ class Funding(SerializableModel):
     money_raised: Optional[int] = None
     announced_date: Optional[dict] = None
     number_of_investors: Optional[int] = None
-    investor_list: List[Investor] = []
+    investor_list: list[Investor] = []
 
 
 class LinkedInCompany(SerializableModel):
@@ -66,12 +66,12 @@ class LinkedInCompany(SerializableModel):
     description: Optional[str] = None
     website: Optional[str] = None
     industry: Optional[str] = None
-    company_size: Optional[List[Optional[int]]] = None
+    company_size: Optional[list[Optional[int]]] = None
     company_size_on_linkedin: Optional[int] = None
     company_type: Optional[str] = None
     founded_year: Optional[int] = None
-    specialties: Optional[List[str]] = []
-    locations: List[CompanyLocation] = []
+    specialties: Optional[list[str]] = []
+    locations: list[CompanyLocation] = []
     hq: Optional[CompanyLocation] = None
     follower_count: Optional[int] = None
     profile_pic_url: Optional[str] = None
@@ -80,10 +80,10 @@ class LinkedInCompany(SerializableModel):
     universal_name_id: Optional[str] = None
     linkedin_internal_id: Optional[str] = None
     search_id: Optional[str] = None
-    updates: List[CompanyUpdate] = []
-    similar_companies: List[AffiliatedCompany] = []
-    affiliated_companies: List[AffiliatedCompany] = []
-    funding_data: Optional[List[Funding]] = None
+    updates: list[CompanyUpdate] = []
+    similar_companies: list[AffiliatedCompany] = []
+    affiliated_companies: list[AffiliatedCompany] = []
+    funding_data: Optional[list[Funding]] = None
 
     def _determine_funding_stage(self, funding) -> FundingStage:
         """Helper method to determine funding stage from a funding round."""
@@ -157,7 +157,7 @@ class LinkedInCompany(SerializableModel):
 
     def get_funding_stages_between_dates(
         self, start_date: date, end_date: date = None
-    ) -> List[FundingStage]:
+    ) -> list[FundingStage]:
         """Get the sequence of funding stages between two dates."""
         if not self.funding_data:
             return [FundingStage.UNKNOWN]
@@ -190,9 +190,9 @@ class LinkedInCompany(SerializableModel):
 
 class AILinkedinJobDescription(SerializableModel):
     role_summary: str
-    skills: List[str]
-    requirements: List[str]
-    sources: List[str]
+    skills: list[str]
+    requirements: list[str]
+    sources: list[str]
 
 
 class LinkedInExperience(SerializableModel):
@@ -205,10 +205,10 @@ class LinkedInExperience(SerializableModel):
     company_linkedin_profile_url: Optional[str] = None
     company_data: Optional[LinkedInCompany] = None
     summarized_job_description: Optional[AILinkedinJobDescription] = None
-    experience_tags: Optional[List[str]] = None
+    experience_tags: Optional[list[str]] = None
 
     @property
-    def funding_stages_during_tenure(self) -> List[FundingStage]:
+    def funding_stages_during_tenure(self) -> list[FundingStage]:
         """Calculate the funding stages of the company during this person's tenure."""
         if not self.company_data or not self.starts_at:
             return [FundingStage.UNKNOWN]
@@ -265,8 +265,8 @@ class LinkedInProfile(SerializableModel):
     city: Optional[str] = None
     country: Optional[str] = None
     public_identifier: str
-    experiences: List[LinkedInExperience] = []
-    education: List[LinkedInEducation] = []
+    experiences: list[LinkedInExperience] = []
+    education: list[LinkedInEducation] = []
     career_metrics: Optional[CareerMetrics] = None
 
     def to_context_string(self) -> str:

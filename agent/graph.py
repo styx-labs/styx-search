@@ -15,8 +15,8 @@ from models.search import (
     SearchState,
     SearchInputState,
     OutputState,
+    EvaluationInputState,
 )
-from models.linkedin import LinkedInProfile
 from services.tavily import tavily_search_async
 from langserve import RemoteRunnable
 import os
@@ -24,46 +24,51 @@ import os
 
 def generate_queries(state: SearchState):
     content = get_search_queries(
-        state["candidate_full_name"],
-        state["candidate_context"],
-        state["job_description"],
-        state["number_of_queries"],
-        state["candidate_profile"],
+        state.job.job_description,
+        state.number_of_queries,
+        state.profile,
     )
 
     return {"search_queries": content.queries}
 
 
 async def gather_sources(state: SearchState):
-    all_sources = await tavily_search_async(state["search_queries"])
+    all_sources = await tavily_search_async(state.search_queries)
     unvalidated_sources = deduplicate_and_format_sources(all_sources)
     return {"unvalidated_sources": unvalidated_sources}
 
 
+def initiate_source_validation(state: SearchState):
+    return [
+        Send("validate_and_distill_source", state.model_copy(update={"source": source}))
+        for source in state.unvalidated_sources.keys()
+    ]
+
+
 def validate_and_distill_source(state: SearchState):
-    source = state["unvalidated_sources"][state["source"]]
+    source = state.unvalidated_sources[state.source]
     if source["raw_content"] is None:
         return {"validated_sources": []}
-    
+
     source["raw_content"] = trim_text(source["raw_content"])
 
     confidence = validate_source(
         raw_content=source["raw_content"],
         title=source["title"],
-        candidate_full_name=state["candidate_full_name"],
-        candidate_context=state["candidate_context"],
+        candidate_full_name=state.profile.full_name,
+        candidate_context=state.profile.to_context_string(),
         role_query=source["query"],
         is_job_description=source["is_job_description"],
     )
 
-    if confidence < state["confidence_threshold"]:
+    if confidence < state.confidence_threshold:
         return {"validated_sources": []}
 
     source["weight"] = confidence
     source["distilled_content"] = distill_source(
         raw_content=source["raw_content"],
         is_job_description=source["is_job_description"],
-        candidate_full_name=state["candidate_full_name"],
+        candidate_full_name=state.profile.full_name,
         role_query=source["query"],
     )
 
@@ -71,43 +76,36 @@ def validate_and_distill_source(state: SearchState):
 
 
 def compile_sources(state: SearchState):
-    validated_sources = state["validated_sources"]
-    ranked_sources = sorted(validated_sources, key=lambda x: x["weight"], reverse=True)
-
-    # Separate sources by type
-    job_description_sources, other_sources = separate_sources_by_type(ranked_sources)
-
-    # Format citations for non-job-description sources
-    formatted_text, citation_list = format_citations(other_sources)
-
-    # Convert candidate_profile dict to LinkedInProfile object
-    candidate_profile = LinkedInProfile(**state["candidate_profile"])
-
-    # Update profile with job descriptions
-    updated_profile = update_profile_with_job_descriptions(
-        candidate_profile, job_description_sources
+    ranked_sources = sorted(
+        state.validated_sources, key=lambda x: x["weight"], reverse=True
     )
 
-    # Convert back to dict for state
-    candidate_profile_dict = updated_profile.model_dump()
+    job_description_sources, other_sources = separate_sources_by_type(ranked_sources)
+
+    source_str, citations = format_citations(other_sources)
+
+    profile = update_profile_with_job_descriptions(
+        state.profile, job_description_sources
+    )
 
     return {
-        "source_str": formatted_text,
-        "citations": citation_list,
-        "candidate_profile": candidate_profile_dict,
+        "source_str": source_str,
+        "citations": citations,
+        "profile": profile,
     }
-
-
-def initiate_source_validation(state: SearchState):
-    return [
-        Send("validate_and_distill_source", {"source": source, **state})
-        for source in state["unvalidated_sources"].keys()
-    ]
 
 
 async def get_evaluation(state: SearchState):
     remote_eval = RemoteRunnable(os.getenv("EVAL_ENDPOINT"))
-    evaluation = await remote_eval.ainvoke(input=state)
+    evaluation = await remote_eval.ainvoke(
+        input=EvaluationInputState(
+            source_str=state.source_str,
+            profile=state.profile,
+            job=state.job,
+            citations=state.citations,
+            custom_instructions=state.custom_instructions,
+        )
+    )
     return {**evaluation}
 
 
