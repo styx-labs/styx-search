@@ -1,15 +1,28 @@
-from typing import Optional
 from datetime import date
 from enum import Enum
 from .serializable import SerializableModel
 
 
-# Move all the Enum classes and career analysis related classes here
-class FundingStage(str, Enum):
-    """Enum for company funding stages."""
+class FundingType(str, Enum):
+    """Detailed funding type classification."""
 
-    PRE_SEED = "Pre-Seed"
-    SEED = "Seed"
+    ANGEL = "Angel Round"
+    CONVERTIBLE_NOTE = "Convertible Note"
+    CORPORATE = "Corporate Round"
+    DEBT = "Debt Financing"
+    EQUITY_CROWDFUNDING = "Equity Crowdfunding"
+    GENERIC = "Funding Round"
+    GRANT = "Grant"
+    ICO = "Initial Coin Offering"
+    NON_EQUITY = "Non Equity Assistance"
+    POST_IPO_DEBT = "Post-IPO Debt"
+    POST_IPO_EQUITY = "Post-IPO Equity"
+    POST_IPO_SECONDARY = "Post-IPO Secondary"
+    PRE_SEED = "Pre Seed Round"
+    PRIVATE_EQUITY = "Private Equity Round"
+    PRODUCT_CROWDFUNDING = "Product Crowdfunding"
+    SECONDARY_MARKET = "Secondary Market"
+    SEED = "Seed Round"
     SERIES_A = "Series A"
     SERIES_B = "Series B"
     SERIES_C = "Series C"
@@ -18,8 +31,9 @@ class FundingStage(str, Enum):
     SERIES_F = "Series F"
     SERIES_G = "Series G"
     SERIES_H = "Series H"
-    IPO = "IPO"
-    ACQUIRED = "Acquired"
+    SERIES_I = "Series I"
+    SERIES_J = "Series J"
+    VENTURE = "Venture Round"
     UNKNOWN = "Unknown"
 
 
@@ -46,9 +60,9 @@ class ExperienceStageMetrics(SerializableModel):
     """Model for experience at a particular company stage."""
 
     company_name: str
-    funding_stage: FundingStage
+    funding_stage: FundingType
     joined_at: date
-    left_at: Optional[date]
+    left_at: date | None
     duration_months: int
     company_tier: CompanyTier
 
@@ -228,20 +242,10 @@ class TechStackPatterns:
 class CareerMetrics(SerializableModel):
     """Model for career analysis metrics."""
 
-    total_experience_months: int
-    average_tenure_months: int
-    current_tenure_months: int
-    tech_stacks: Optional[list[str]] = None
-    career_tags: Optional[list[str]] = None
-    experience_tags: Optional[list[str]] = None
-
-    def to_dict(self) -> dict:
-        """Convert career metrics to a dictionary format."""
-        return {
-            "total_experience_months": self.total_experience_months,
-            "average_tenure_months": self.average_tenure_months,
-            "current_tenure_months": self.current_tenure_months,
-            "tech_stacks": self.tech_stacks,
-            "career_tags": self.career_tags,
-            "experience_tags": self.experience_tags,
-        }
+    total_experience_months: int | None
+    average_tenure_months: int | None
+    current_tenure_months: int | None
+    tech_stacks: list[str] | None
+    career_tags: list[str] | None
+    experience_tags: list[str] | None
+    latest_experience_level: str | None = None
